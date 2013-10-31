@@ -167,7 +167,7 @@ EOF
   fi
 
   # check the source file exists
-  if [[ $(find "$SOURCE_DIR" -path "$SOURCE_DIR/$FILE_NAME" | wc -l) -lt 1 ]]; then
+  if [[ $(find "$SOURCE_DIR" -path "$SOURCE_DIR/$FILE_NAME" -follow | wc -l) -lt 1 ]]; then
     # but not if we are locking to a git ref
     # since we would be checking the working tree
     if [[ ! -n "$REF" ]] && [[ "$FILE_NAME" != '.' ]] && [[ -z "$IGNORE_MISSING" ]]; then
