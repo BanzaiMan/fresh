@@ -222,9 +222,9 @@ _file_list() {
         local not_name_glob='.*'
       fi
       if [[ -d $path_glob ]]; then
-        find "$path_glob" -type f -not -name "$not_name_glob"
+        find "$path_glob" -type f -not -name "$not_name_glob" -follow
       else
-        find "$SOURCE_DIR" -path "$path_glob" -not -name "$not_name_glob" -type f | while read FILE_PATH; do
+        find "$SOURCE_DIR" -path "$path_glob" -not -name "$not_name_glob" -type f -follow | while read FILE_PATH; do
           if ! echo "${FILE_PATH#$path_glob}" | grep -q /; then
             echo "$FILE_PATH"
           fi
@@ -711,7 +711,7 @@ _fresh_clean_repos() {
       fi
     done
 
-    find "$FRESH_PATH/source" -mindepth 1 -maxdepth 1 -type d -empty -not -name '.*' -exec rmdir {} \;
+    find "$FRESH_PATH/source" -mindepth 1 -maxdepth 1 -type d -empty -not -name '.*' -follow -exec rmdir {} \;
   fi
 }
 
