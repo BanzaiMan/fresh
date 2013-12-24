@@ -1,8 +1,10 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Install fresh with the following command:
 #
 #   bash -c "`curl -sL get.freshshell.com`"
+
+set -e
 
 mkdir -p ~/.fresh/source/freshshell
 
@@ -30,16 +32,16 @@ if [ -n "$FRESH_LOCAL_SOURCE" ] && ! [ -d "$FRESH_LOCAL" ]; then
 fi
 
 if ! [ -e ~/.freshrc ]; then
-  if [ -r ~/.dotfiles/freshrc ]; then
-    ln -s .dotfiles/freshrc ~/.freshrc
+  if [ -r "$FRESH_LOCAL/freshrc" ]; then
+    ln -s "$FRESH_LOCAL/freshrc" ~/.freshrc
   else
     cat << 'EOF' > ~/.freshrc
 # freshshell.com
 #
 # Examples:
 #
-#   fresh twe4ked/dotfiles shell/functions.sh
-#   fresh jasoncodes/dotfiles aliases/rails.sh
+#   fresh twe4ked/dotfiles shell/functions/\*
+#   fresh jasoncodes/dotfiles shell/aliases/rails.sh
 #   fresh jasoncodes/dotfiles config/tmux.conf --file
 #
 # See http://freshshell.com/readme for documentation.
