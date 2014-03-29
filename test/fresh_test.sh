@@ -1334,6 +1334,35 @@ it_allows_bin_fresh_error_to_be_disabled() {
   runFresh
 }
 
+it_allows_default_bin_path_to_be_configured() {
+  echo "FRESH_BIN_PATH=\"\$HOME/Applications/bin\"" >> $FRESH_RCFILE
+  echo "fresh bin/fresh --bin" >> $FRESH_RCFILE
+  mkdir -p $FRESH_LOCAL/bin
+  echo "test file" > $FRESH_LOCAL/bin/fresh
+
+  runFresh
+
+  assertTrue 'file exists after' '[ -f "$HOME/Applications/bin/fresh" ]'
+  assertEquals "$FRESH_PATH/build/bin/fresh" "$(readlink ~/Applications/bin/fresh)"
+  assertFileMatches $FRESH_PATH/build/shell.sh <<EOF
+export PATH="\$HOME/Applications/bin:\$PATH"
+export FRESH_PATH="$FRESH_PATH"
+EOF
+  assertFileMatches "$HOME/Applications/bin/fresh" <<EOF
+test file
+EOF
+}
+
+it_path_export_to_be_disabled() {
+  export FRESH_NO_PATH_EXPORT=1
+  runFresh
+  unset FRESH_NO_PATH_EXPORT
+
+  assertFileMatches $FRESH_PATH/build/shell.sh <<EOF
+export FRESH_PATH="$FRESH_PATH"
+EOF
+}
+
 it_runs_fresh_after_build() {
   echo "fresh_after_build() { echo test after_build; }" >> $FRESH_RCFILE
 
@@ -1348,7 +1377,7 @@ EOF
 assert_parse_fresh_dsl_args() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     _dsl_fresh_options # init defaults
     _parse_fresh_dsl_args "$@" > $SANDBOX_PATH/test_parse_fresh_dsl_args.out
@@ -1677,7 +1706,7 @@ EOF
 it_escapes_arguments() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     _escape foo 'bar baz' > $SANDBOX_PATH/escape.out
   )
@@ -1690,7 +1719,7 @@ EOF
 it_confirms_query_positive() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     echo y | _confirm 'Test question' > $SANDBOX_PATH/confirm.out
   )
@@ -1701,7 +1730,7 @@ it_confirms_query_positive() {
 it_confirms_query_negative() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     echo n | _confirm 'Test question' > $SANDBOX_PATH/confirm.out
   )
@@ -1712,7 +1741,7 @@ it_confirms_query_negative() {
 it_confirms_query_default() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     echo | _confirm 'Test question' > $SANDBOX_PATH/confirm.out
   )
@@ -1723,7 +1752,7 @@ it_confirms_query_default() {
 it_confirms_query_invalid() {
   (
     set -e
-    __FRESH_TEST_MODE=1
+    __FRESH_TEST_MODE__=1
     source bin/fresh
     echo -e "blah\ny" | _confirm 'Test question' > $SANDBOX_PATH/confirm.out
   )
